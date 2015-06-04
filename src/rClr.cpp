@@ -1860,7 +1860,7 @@ CLR_OBJ * rclr_mono_call_inst_method(const char *mnam, CLR_OBJ * obj, void ** pa
 #ifdef MONO_CLR
 
 void rclr_mono_create_domain( char* filename, int mono_debug) {
-	if(domain != NULL)
+    if(domain != NULL)
 	{
 		warning("rclr_mono_create_domain called with argument %s, but the domain is already set. Ignoring.", filename);
 		return;
@@ -1869,10 +1869,11 @@ void rclr_mono_create_domain( char* filename, int mono_debug) {
 		mono_jit_parse_options(sizeof(options)/sizeof(char*), (char**)options);
 		mono_debug_init(MONO_DEBUG_FORMAT_MONO);
 	}
-	if(INIT_CLR_FROM_FILE)
+    if(INIT_CLR_FROM_FILE) {
 		domain = mono_jit_init(filename);
+    }
 	else {
-		domain = mono_jit_init_version("rClr_domain", RCLR_DEFAULT_RUNTIME_VERSION);
+        domain = mono_jit_init_version("rClr_domain", RCLR_DEFAULT_RUNTIME_VERSION);
 		if (!domain) {
 			error("Failed to create rClr MonoDomain. Requested runtime was %s", RCLR_DEFAULT_RUNTIME_VERSION);
 			return;
@@ -1884,7 +1885,11 @@ void rclr_mono_create_domain( char* filename, int mono_debug) {
 			//mono_jit_info_get_code_start
 		}
 	}
-
+    // Hard coded paths, this is not good, but avoids the error in:
+    // The 'ExeConfigFilename' argument cannot be null
+    // https://github.com/mono/mono/commit/57f5187ad29a7913f083a659ea77d90eb8bad4d4
+    //TODO: Fix this bug by setting this during the build process
+    mono_domain_set_config(domain, "/Users/nigel/mono64_4.0/", "/Users/nigel/mono64_4.0/etc/mono/config");
 	assembly = mono_domain_assembly_open (domain, filename);
 	if (!assembly) {
 		error("Mono assembly seems to be NULL??");
