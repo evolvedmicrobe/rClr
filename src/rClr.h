@@ -30,7 +30,6 @@ static const char* options[] = {
 
 #ifdef MONO_INST
 #include <mono/jit/jit.h> 
-#include <glib.h>  // to get typedef gpointer
 // If building against the distributed mono, the following struct declaration is needed. 
 // Cannot find it in the header files included.
 /* This corresponds to System.Type */

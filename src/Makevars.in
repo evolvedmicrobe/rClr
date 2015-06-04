@@ -58,8 +58,8 @@ BuildConfiguration=Unix
 else
 BuildConfiguration=UnixDebug
 endif
-PKG_CFLAGS_LOCAL=`pkg-config --cflags monosgen-2 glib-2.0`
-PKG_LIBS_LOCAL=`pkg-config --libs monosgen-2 glib-2.0`
+PKG_CFLAGS_LOCAL=`pkg-config --cflags monosgen-2`
+PKG_LIBS_LOCAL=`pkg-config --libs monosgen-2`
 PKG_CFLAGS = $(PKG_CFLAGS_LOCAL) -g -D MONO_CLR -D MONO_INST
 PKG_LIBS=$(PKG_LIBS_LOCAL)
 # TODO: can I avoid having this platform dependent? Why did I not use BuildConfiguration folder under Linux?
@@ -87,8 +87,8 @@ clean:
 
 rClrMono$(SHLIB_EXT): rClrMono.o
 	#gcc -std=gnu99 -shared -o rClr.so rClrMono.o -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lrt -ldl -lpthread -lglib-2.0 -L/usr/lib/R/lib -lR
-	$(CXX) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
-	#$(CXX) -shared -L/usr/lib/R/lib -Wl,-z,relro -o rClr.so rClrMono.o -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lrt -ldl -lpthread -lglib-2.0 -L/usr/lib/R/lib -lR
+	$(CXX) -std=c++11 -shared -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
+	#$(CXX) -shared -L/usr/lib/R/lib -o rClr.so rClrMono.o -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lrt -ldl -lpthread -lglib-2.0 -L/usr/lib/R/lib -lR
 
 rClrMono.o:
 	$(CXX) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
@@ -114,12 +114,12 @@ instdir:
 
 # Note: see explanation for -u -p in Makefile.win. May be unnecessary on Linux?
 rClrLib: rClrLibComp 
-	cp -u -p rClrMono$(SHLIB_EXT) $(INSTDIR)/libs$(R_ARCH)
+	cp -p rClrMono$(SHLIB_EXT) $(INSTDIR)/libs$(R_ARCH)
 	if [ -e symbols.rds ] ; then cp -u -p symbols.rds $(INSTDIR)/libs$(R_ARCH) ; fi
 	# using rm -f to prevent the following, which seems to occur even when these should not be write-protected
 	#  cp: cannot create regular file `../inst/libs/ClrFacade.dll': Permission denied
 	-rm -f $(INSTDIR)/libs/*.*
-	-cp -u -p $(CLR_FACADE_BINS) $(INSTDIR)/libs
+	-cp -p $(CLR_FACADE_BINS) $(INSTDIR)/libs
 
 rClrLibComp:
 	"$(XBUILD)" $(SLN) /t:$(MODE) $(SLNPROPERTIES)

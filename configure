@@ -41,9 +41,7 @@ double_backslash() {
 }
 
 MONO_CFLAGS=`pkg-config --cflags mono-2`
-GLIB_CFLAGS=`pkg-config --cflags glib-2.0`
 echo "MONO_CFLAGS=$MONO_CFLAGS"
-echo "GLIB_CFLAGS=$GLIB_CFLAGS"
 
 if [ ${#MONO_CFLAGS} -eq 0 ]
 then
@@ -51,11 +49,6 @@ then
 	exit 1
 fi
 
-if [ ${#GLIB_CFLAGS} -eq 0 ]
-then
-	echo "error: glib-2.0 not found"
-	exit 1
-fi
 
 # I do not think the following is needed. The solution file would trigger a Target RestorePackages:
 #if [ -e ${RCLR_NUGET_EXE} ] 

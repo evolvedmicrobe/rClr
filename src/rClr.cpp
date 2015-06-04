@@ -1583,7 +1583,8 @@ SEXP clr_obj_mono_convert_to_SEXP( CLR_OBJ * pobj) {
 		{
 		case MONO_TYPE_I          	: // IntPtr, that we assume to be a SEXP as coming from R.NET. This is a big assumption.
 			// HACK? Assume this is an IntPtr, native handle to an R.NET object.
-			result = (SEXP)(*((gpointer*)mono_object_unbox(pobj)));
+			//result = (SEXP)(*((gpointer*)mono_object_unbox(pobj)));
+            result = (SEXP)(size_t*)(mono_object_unbox(pobj));
 			break;
 		case MONO_TYPE_I4         	:
 			result = make_int_sexp(1, (int*)mono_object_unbox (pobj));
