@@ -85,6 +85,7 @@ namespace Rclr
             converterFunctions.Add(typeof(Dictionary<string, string[]>), ConvertDictionary<string[]>);
             converterFunctions.Add(typeof(Dictionary<string, int[]>), ConvertDictionary<int[]>);
             converterFunctions.Add(typeof(Dictionary<string, DateTime[]>), ConvertDictionary<DateTime[]>);
+            converterFunctions.Add(typeof(Dictionary<string, object>), ConvertGenericDictionary);
         }
 
         private void removeDictionaries()
@@ -101,6 +102,7 @@ namespace Rclr
             converterFunctions.Remove(typeof(Dictionary<string, string[]>));
             converterFunctions.Remove(typeof(Dictionary<string, int[]>));
             converterFunctions.Remove(typeof(Dictionary<string, DateTime[]>));
+            converterFunctions.Remove(typeof(Dictionary<string, object>));
         }
 
         private void addMultidimensionalArrays()
@@ -380,6 +382,29 @@ namespace Rclr
             SetAttribute(values, dict.Keys.ToArray());
             return values.AsList();
         }
+        
+        private SymbolicExpression ConvertGenericDictionary(object obj)
+        {
+            var dict = (IDictionary<string, object>)obj;
+            var list = new GenericVector(engine, dict.Count);
+            var values = dict.Values.ToArray();
+            var keys = dict.Keys.ToArray();
+            for (int i = 0; i < values.Length; i++)
+            {
+                var res = TryConvertToSexp(values[i]) as SymbolicExpression;
+                if (res != null)
+                {
+                    list[i] = res;
+                }
+                else
+                {
+                    list[i] = new CharacterVector(engine, new string[] {"Could not convert"});
+                }
+            }
+            list.SetNames(keys.ToArray());
+            return list;
+        }
+                
 
         private SymbolicExpression ConvertAll(object[] objects, Func<object, SymbolicExpression> converter=null)
         {
